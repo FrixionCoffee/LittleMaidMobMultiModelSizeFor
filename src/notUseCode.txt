@@ -1,0 +1,81 @@
+メイドさんのインナークラス置き場
+今は使わないけどそのうち使う用
+
+
+    /**
+     * CapsHelperだけでは取得できないデータをリフレクションを用いて強引に取得するUtilクラス
+     * あまり使用すべきでない
+     */
+    private static final class ForceCapsFetcher {
+        private static int cacheCalledOfNumber = 0;
+        private static final Map<ModelCapsLittleMaid, EntityLittleMaid> cacheMap = new IdentityHashMap<>(); //同一インスタンスを保証するMap
+
+        static Optional<Integer> getContractDays(final IModelCaps entityCaps){
+            getLittleMaid(entityCaps).map(entityLittleMaid -> {
+                final float contractDays = entityLittleMaid.getContractLimitDays();
+                if (contractDays == -1f){
+                    return Optional.empty();
+                }
+                return Optional.of((int)contractDays);
+            });
+            return Optional.empty();
+        }
+
+        /**
+         * setDefaultPauseに入ってくるModelCapsLittleMaidからリフレクションによるゴリ押しで対象のメイドを取得する関数
+         * ModelCapsHelperだとentityはDeprecatedなのでリフレクションで取得した
+         * <p>
+         * 毎フレーム呼び出すと負荷がやばいと思う。
+         *
+         * LMMやバージョンに強く依存しているため環境ごとに変更が必要(特にModelCaps付近)
+         */
+        private static Optional<EntityLittleMaid> getLittleMaid(final IModelCaps entityCaps) {
+
+            ModelCapsLittleMaid capsLittleMaid;
+            try {
+                capsLittleMaid = (ModelCapsLittleMaid) entityCaps;
+                // 基本的にキャストに失敗することは無いと思うのでinstance ofで比較せず例外処理で任せる。正直どっちも誤差レベルらしいけど…
+            } catch (ClassCastException e) {
+                return Optional.empty();
+            }
+
+            final EntityLittleMaid cacheCaps = cacheMap.get(capsLittleMaid);
+            cacheCalledOfNumber++;
+
+            if (cacheCaps != null) {
+                // キャッシュにあればリフレクションは使わずに済む
+                return Optional.of(cacheCaps);
+            }
+
+            if (capsLittleMaid.getClass() == ModelCapsLittleMaid.class) {
+                // ModelCapsLittleMaidの子クラスを弾く
+                return Optional.empty();
+            }
+
+            if (cacheMap.size() >= 32 || cacheCalledOfNumber >= 1024) {
+                // 定期的(?)にキャッシュをワイプ
+                cacheMap.clear();
+                cacheCalledOfNumber = 0;
+            }
+
+            try {
+
+                Field field = capsLittleMaid.getClass()
+                        .getSuperclass()
+                        .getDeclaredField("owner");
+
+                field.setAccessible(true);
+                EntityLittleMaid entityLittleMaid = (EntityLittleMaid) field.get(capsLittleMaid);
+                cacheMap.put(capsLittleMaid, entityLittleMaid);
+                return Optional.of(entityLittleMaid);
+
+            } catch (NoSuchFieldException | IllegalAccessException | ClassCastException | NullPointerException e) {
+                cacheMap.clear();
+                return Optional.empty();
+
+            } catch (SecurityException e) {
+                throw new SecurityException("お使いのJVMではリフレクションが動作しません");
+            }
+
+        }
+    }
