@@ -4,55 +4,11 @@ import firis.lmmm.api.model.ModelLittleMaidBase;
 import firis.lmmm.api.renderer.ModelRenderer;
 
 import java.util.Optional;
-
-/*
- * サンプルマルチモデル定義
- * <p>
- * ModelMultiBaseを継承したクラスをマルチモデルと判断する
- * <p>
- * 通常のメイドさんの改良
- * 　基準メイドさんを改変する場合はModelLittleMaidBaseを継承する
- * 　すでに存在するメイドさんを改変する場合はModelLittleMaid_SR2などを継承する
- * 　本クラスはSR2モデルを継承している
- * <p>
- * 命名規則（モデル）
- * 　ModelLittleMaid_xxxxxxxxをクラス名とすること
- * 　xxxxxxxxがモデル名となりテクスチャとのリンクに利用される
- * 　本クラスの場合はSampleMaidModelがモデル名となる
- * <p>
- * 命名規則（テクスチャ）
- * 　assets.minecraft.textures.entity.littleMaidが基準フォルダとなる
- * 　[パッケージ].[テクスチャ名]_[モデル名]形式でフォルダを作成する
- * 　　※[パッケージ]は省略可能
- * 　上記フォルダ内にメイドさんテクスチャを格納する
- * 　メイドさんテクスチャはxxxxxxxx_0.png～xxxxxxxx_f.pngまで
- * 　xxxxxxxxは任意の文字列となり末尾の英数字が16進数で16色の色情報を意味する
- * <p>
- * <p>
- * 本サンプルのテクスチャが格納されているフォルダは下記を意味している
- * 　Tutorial.DemoModel_SampleMaidModel
- * <p>
- * 　Tutorial [パッケージ]
- * 　DemoModel [テクスチャ名]
- * 　SampleMaidModel [モデル名]
- * <p>
- * 　[モデル名]はモデルクラスと同一の名前になるように設定すること
- * 　本サンプルの場合は[SampleMaidModel]がモデル名となる。
- * <p>
- * 同一モデルで別テクスチャを使用する場合は
- * 別名称のパッケージまたはテクスチャ名のフォルダを用意すれば
- * モデルは同じでテクスチャは別のものを設定できる
- * <p>
- * メイドさん選択画面でTutorial.DemoModel_SampleMaidModelが表示される
- */
-
 /**
  * ソースコードライセンス, リソースライセンスはMMM氏の規約と同じ
  * https://github.com/MMM666/littleMaidMob/blob/master/old/readme.txt
  * の利用条件参照<br><br>
  * <p>
- * 使用時と若干ライセンス内容が異なるので注意(使用者はこのメイドさんと他のテクスチャパックを組み合わせた時、他のLMM関係者に問い合わせ時に制限を受ける)
- * 使用時の禁止行為との違いから何をしてほしくないのか理解できる方を制限するつもりはありません。
  */
 public class ModelLittleMaid_ZeroDot500 extends ModelLittleMaidBase {
     public ModelRenderer eyeR;
