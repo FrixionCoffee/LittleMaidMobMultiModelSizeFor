@@ -10,7 +10,7 @@ import java.util.Optional;
  * の利用条件参照<br><br>
  * <p>
  */
-public class ModelLittleMaid_ZeroDot500 extends ModelLittleMaidBase {
+public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
     public ModelRenderer eyeR;
     public ModelRenderer eyeL;
 
@@ -243,22 +243,22 @@ public class ModelLittleMaid_ZeroDot500 extends ModelLittleMaidBase {
      * 拡大率制御用変数
      * ここのEnumを用意した・追加した物に変更することで全体の拡大率を変更することができる
      */
-    private static final SizeRate sizeRate = SizeRate.ZERO_DOT400_DANGER;
+    private static final SizeRate sizeRate = SizeRate.ZERO_DOT950;
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot500() {
+    public ModelLittleMaid_ZeroDot950() {
         super();
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot500(float pSize) {
+    public ModelLittleMaid_ZeroDot950(float pSize) {
         super(pSize);
 //        テクスチャがデフォルトでない場合(多分使わない)
 //        super(pSize, 0.0f, 64, 64);
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot500(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
+    public ModelLittleMaid_ZeroDot950(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
         super(pSize, pYOffset, pTextureWidth, pTextureHeight);
     }
 

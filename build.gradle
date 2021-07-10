@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+
 buildscript {
     repositories {
         jcenter()
@@ -23,7 +27,7 @@ compileJava {
 minecraft {
     version = "1.12.2-14.23.5.2768"
     runDir = "run"
-    
+
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -38,7 +42,7 @@ dependencies {
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
     //compile "some.group:artifact:version"
-      
+
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
@@ -66,11 +70,11 @@ processResources {
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-                
+
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
@@ -79,10 +83,49 @@ processResources {
 
 [compileJava, compileTestJava].each{ it.options.encoding = 'UTF-8' }
 
+static String getSourceFileName(){
+    def workDir = Paths.get("D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\java")
+
+    def sourceFileCodeName = null
+    for (Path path in Files.list(workDir)){
+        String s = path.getFileName()
+        if (s.indexOf("ModelLittleMaid") != -1){
+            sourceFileCodeName = s
+        }
+    }
+    String sourceFileStrPath = "D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\java" + sourceFileCodeName
+    Path sourceFilePath = Paths.get(sourceFileStrPath)
+    sourceFilePath.getFileName()
+}
+
+static String getBuildName(String fullSourceFileName){
+    final int endIndex = fullSourceFileName.indexOf(".")
+    final int startIndex = fullSourceFileName.indexOf("_") + 1
+    fullSourceFileName.substring(startIndex, endIndex)
+}
+
+static void translateResourcesDirName(){
+    Path resourcePath = null
+    for (Path path in Files.list(Paths.get("D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\resources\\assets\\minecraft\\textures\\entity\\littleMaid"))){
+        resourcePath = path
+        break
+    }
+    final String baseName = "SizeFor_" + getBuildName(getSourceFileName())
+    final Path newResourcePath = resourcePath.resolveSibling(Paths.get(baseName))
+    Files.move(resourcePath, newResourcePath)
+}
+
 //Create LittleMaid Model Zip File
 task zipBuild(type: Zip, dependsOn: jar) {
-	archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
+    includeEmptyDirs = false
+    translateResourcesDirName()
+    String archivesBaseName = "SozeFor" + getBuildName(getSourceFileName())
+    archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
     from sourceSets.main.output
+}
+
+task example(){
+    print(getSourceFileName())
 }
 
 artifacts {
