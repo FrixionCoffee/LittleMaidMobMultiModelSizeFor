@@ -4,13 +4,18 @@ import firis.lmmm.api.model.ModelLittleMaidBase;
 import firis.lmmm.api.renderer.ModelRenderer;
 
 import java.util.Optional;
+
 /**
- * ソースコードライセンス, リソースライセンスはMMM氏の規約と同じ
- * https://github.com/MMM666/littleMaidMob/blob/master/old/readme.txt
- * の利用条件参照<br><br>
+ * Javaソースコードライセンス, リソースライセンスはMMM氏の規約↓と同じ
+ * ----------------------------------------------------
+ * ・テクスチャーを作ってくれた方々に感謝の祈りを捧げてください。
+ * ・動画等での使用、改造、転載すきにしてもよいのよ？
+ * ・ただし、商用利用は除く。
+ * ・あと、いかなる意味でも作者は責任をとりませぬ。
+ * ----------------------------------------------------
  * <p>
  */
-public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
+public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase {
     public ModelRenderer eyeR;
     public ModelRenderer eyeL;
 
@@ -33,6 +38,7 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
     private enum SizeRate {
         /**
          * DEPRECATEDは人間が容認できないレベルの位置ズレが起きるもの
+         *
          * @deprecated
          */
         @Deprecated
@@ -43,6 +49,9 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
 
         @SuppressWarnings("unused")
         ZERO_DOT250_DANGER(0.25f),
+
+        @SuppressWarnings("unused")
+        ZERO_DOT300_DANGER(0.3f),
 
         /**
          * この辺は自分がリトルメイドになる場合に使えそうなので残してるだけ感
@@ -243,22 +252,22 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
      * 拡大率制御用変数
      * ここのEnumを用意した・追加した物に変更することで全体の拡大率を変更することができる
      */
-    private static final SizeRate sizeRate = SizeRate.ZERO_DOT950;
+    private static final SizeRate sizeRate = SizeRate.ZERO_DOT333_DANGER;
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot950() {
+    public ModelLittleMaid_ZeroDot333DangerNotSR2() {
         super();
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot950(float pSize) {
+    public ModelLittleMaid_ZeroDot333DangerNotSR2(float pSize) {
         super(pSize);
 //        テクスチャがデフォルトでない場合(多分使わない)
 //        super(pSize, 0.0f, 64, 64);
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot950(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
+    public ModelLittleMaid_ZeroDot333DangerNotSR2(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
         super(pSize, pYOffset, pTextureWidth, pTextureHeight);
     }
 
@@ -392,6 +401,8 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
     /**
      * ここはエンティティ生成時や読み取り時に呼ばれるっぽい
      * ここの値を元に当たり判定が決定されているが、動的な変更は不可
+     * <p>
+     * 追記:極一部のモデルはリアルタイムに身長を変える機能を持っているようなので、「動的な変更は不可」は多分誤りです。
      *
      * @return メイドさんの身長
      */
@@ -422,7 +433,7 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
 
         float f3 = entityTicksExisted + partialTickTime + entityIdFactor;
         // 目パチ
-        if( 0 > mh_sin(f3 * 0.05F) + mh_sin(f3 * 0.13F) + mh_sin(f3 * 0.7F) + 2.55F) {
+        if (0 > mh_sin(f3 * 0.05F) + mh_sin(f3 * 0.13F) + mh_sin(f3 * 0.7F) + 2.55F) {
             eyeR.setVisible(true);
             eyeL.setVisible(true);
         } else {
@@ -433,6 +444,7 @@ public class ModelLittleMaid_ZeroDot950 extends ModelLittleMaidBase {
 
     @Override
     public void setDefaultPause(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, IModelCaps entityCaps) {
+        // 親クラスのsetDefault...(args*...)は意図的に呼んでいない
         setDefaultPause();
 
         // ちらつき防止変数
