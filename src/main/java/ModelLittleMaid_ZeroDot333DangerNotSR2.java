@@ -249,10 +249,25 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
     }
 
     /**
+     *SR2と他のリトルメイドで利き手が違うっぽい？
+     */
+    private enum ArmArray{
+        RIGHT(0),
+        LEFT(1);
+
+        private final int value;
+
+        ArmArray(int value){
+            this.value = value;
+        }
+    }
+
+
+    /**
      * 拡大率制御用変数
      * ここのEnumを用意した・追加した物に変更することで全体の拡大率を変更することができる
      */
-    private static final SizeRate sizeRate = SizeRate.ZERO_DOT333_DANGER;
+    private static final SizeRate sizeRate = SizeRate.ZERO_DOT950;
 
     @SuppressWarnings("unused")
     public ModelLittleMaid_ZeroDot333DangerNotSR2() {
@@ -329,11 +344,11 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
 
     private void initArmsArray() {
         // アーム配列は役割がよくわからんので触らないことにする
-        this.Arms[0] = new ModelRenderer(this);
-        this.Arms[0].setRotationPoint(-1.0F, 5.0F, -1.0F);
-        this.Arms[1] = new ModelRenderer(this);
-        this.Arms[1].setRotationPoint(1.0F, 5.0F, -1.0F);
-        this.Arms[1].isInvertX = true;
+        this.Arms[ArmArray.RIGHT.value] = new ModelRenderer(this);
+        this.Arms[ArmArray.RIGHT.value].setRotationPoint(-1.0F + sizeRate.rebirthAxisX, 5.0F - 4f * sizeRate.rebirthAxisY, -1.0F);
+        this.Arms[ArmArray.LEFT.value] = new ModelRenderer(this);
+        this.Arms[ArmArray.LEFT.value].setRotationPoint(1.0F - sizeRate.rebirthAxisX, 5.0F - 4f * sizeRate.rebirthAxisY, -1.0F);
+        this.Arms[ArmArray.LEFT.value].isInvertX = true;
     }
 
     private void initBipedHead(float size) {
