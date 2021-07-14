@@ -57,7 +57,7 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
          * この辺は自分がリトルメイドになる場合に使えそうなので残してるだけ感
          */
         @SuppressWarnings("unused")
-        ZERO_DOT333_DANGER(0.330000F),
+        ZERO_DOT333_DANGER(0.333000F),
 
         @SuppressWarnings("unused")
         ZERO_DOT350_DANGER(0.35f),
