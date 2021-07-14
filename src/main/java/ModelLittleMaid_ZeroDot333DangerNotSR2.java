@@ -150,17 +150,17 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
         public final float axisZ;
 
         /**
-         * rebirthAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
+         * reverseAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
          */
-        public final float rebirthAxisX;
+        public final float reverseAxisX;
         /**
-         * rebirthAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
+         * reverseAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
          */
-        public final float rebirthAxisY;
+        public final float reverseAxisY;
         /**
-         * rebirthAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
+         * reverseAxisは縮小後に起きるズレを補正するための変数(1-拡大率が入る)
          */
-        public final float rebirthAxisZ;
+        public final float reverseAxisZ;
 
         /**
          * コンストラクタに一つだけ値を入れたときに呼ばれる
@@ -175,9 +175,9 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
             axisY = commonAxis;
             axisZ = commonAxis;
 
-            rebirthAxisX = 1.0f - commonAxis;
-            rebirthAxisY = 1.0f - commonAxis;
-            rebirthAxisZ = 1.0f - commonAxis;
+            reverseAxisX = 1.0f - commonAxis;
+            reverseAxisY = 1.0f - commonAxis;
+            reverseAxisZ = 1.0f - commonAxis;
         }
 
         /**
@@ -194,9 +194,9 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
             this.axisY = axisY;
             this.axisZ = axisZ;
 
-            rebirthAxisX = 1.0f - axisX;
-            rebirthAxisY = 1.0f - axisY;
-            rebirthAxisZ = 1.0f - axisZ;
+            reverseAxisX = 1.0f - axisX;
+            reverseAxisY = 1.0f - axisY;
+            reverseAxisZ = 1.0f - axisZ;
         }
 
         /**
@@ -345,9 +345,9 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
     private void initArmsArray() {
         // アーム配列は役割がよくわからんので触らないことにする
         this.Arms[ArmArray.RIGHT.value] = new ModelRenderer(this);
-        this.Arms[ArmArray.RIGHT.value].setRotationPoint(-1.0F + sizeRate.rebirthAxisX, 5.0F - 4f * sizeRate.rebirthAxisY, -1.0F);
+        this.Arms[ArmArray.RIGHT.value].setRotationPoint(-1.0F + sizeRate.reverseAxisX, 5.0F - 4f * sizeRate.reverseAxisY, -1.0F);
         this.Arms[ArmArray.LEFT.value] = new ModelRenderer(this);
-        this.Arms[ArmArray.LEFT.value].setRotationPoint(1.0F - sizeRate.rebirthAxisX, 5.0F - 4f * sizeRate.rebirthAxisY, -1.0F);
+        this.Arms[ArmArray.LEFT.value].setRotationPoint(1.0F - sizeRate.reverseAxisX, 5.0F - 4f * sizeRate.reverseAxisY, -1.0F);
         this.Arms[ArmArray.LEFT.value].isInvertX = true;
     }
 
@@ -465,24 +465,24 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
         // ちらつき防止変数
         final float minimumMoveValue = 0.001f;
 
-        mainFrame.setRotationPoint(0.0F, 8.0F + 9.0f * sizeRate.rebirthAxisY, 0.0F);
+        mainFrame.setRotationPoint(0.0F, 8.0F + 9.0f * sizeRate.reverseAxisY, 0.0F);
         mainFrame.setRotateAngleDegX(0.0F);
         bipedTorso.setRotationPoint(0.0F, 0.0F, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
-        bipedNeck.setRotationPoint(0.0F, 0.0F + 8.0f * sizeRate.rebirthAxisY, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
+        bipedNeck.setRotationPoint(0.0F, 0.0F + 8.0f * sizeRate.reverseAxisY, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
         bipedPelvic.setRotationPoint(0.0F, 7.0F, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
         bipedHead.setRotationPoint(0.0F + minimumMoveValue, 0.0F, 0.0F + minimumMoveValue);
         bipedHead.setRotateAngleDegY(netHeadYaw);
         bipedHead.setRotateAngleDegX(headPitch);
-        bipedBody.setRotationPoint(0.0F, 0.0F + 7.0f * sizeRate.rebirthAxisY, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
-        //bipedRightArm.setRotationPoint(-3.0F + 2.0f * sizeRate.rebirthAxisX, 1.6F - 2.0f * sizeRate.rebirthAxisY, 0.0F);
+        bipedBody.setRotationPoint(0.0F, 0.0F + 7.0f * sizeRate.reverseAxisY, 0.0F).setRotateAngle(0.0F, 0.0F, 0.0F);
+        //bipedRightArm.setRotationPoint(-3.0F + 2.0f * sizeRate.reverseAxisX, 1.6F - 2.0f * sizeRate.reverseAxisY, 0.0F);
 
         //腕の角度Rと縮小後の座標x,yから、本来の位置x',y'はアフィン変換すれば求められると思うけど行列計算と角度推定が面倒なので後回し
-        bipedRightArm.setRotationPoint(-3.0F + 3.0f * sizeRate.rebirthAxisX, 1.6F - 1.75f * sizeRate.rebirthAxisY, 0.0F);
+        bipedRightArm.setRotationPoint(-3.0F + 3.0f * sizeRate.reverseAxisX, 1.6F - 1.75f * sizeRate.reverseAxisY, 0.0F);
         bipedRightArm.setRotateAngle(mh_cos(limbSwing * 0.6662F + 3.141593F) * 2.0F * limbSwingAmount * 0.5F, 0.0F, 0.0F);
-        bipedLeftArm.setRotationPoint(3.0F - 3.0f * sizeRate.rebirthAxisX, 1.6F - 1.75f * sizeRate.rebirthAxisY, 0.0F);
+        bipedLeftArm.setRotationPoint(3.0F - 3.0f * sizeRate.reverseAxisX, 1.6F - 1.75f * sizeRate.reverseAxisY, 0.0F);
         bipedLeftArm.setRotateAngle(mh_cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F, 0.0F, 0.0F);
 
-        final float moveRotatePointLegX = 1.25f * sizeRate.rebirthAxisX;
+        final float moveRotatePointLegX = 1.25f * sizeRate.reverseAxisX;
         bipedRightLeg.setRotationPoint(-1.0F + moveRotatePointLegX, 0.0F, 0.0F);
         bipedRightLeg.setRotateAngle(mh_cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount, 0.0F, 0.0F);
 
@@ -502,12 +502,12 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
 
         if (isRiding) {
             // 縮尺が違うメイドさんがお座りすると多分mainFrame自体が変動して埋まったりするのでその対策
-            mainFrame.setRotationPointY(mainFrame.getRotationPointY() - 6.0f * sizeRate.rebirthAxisY);
+            mainFrame.setRotationPointY(mainFrame.getRotationPointY() - 6.0f * sizeRate.reverseAxisY);
 
             CapsFetcher.getRidingName(entityCaps).ifPresent(ridesName -> {
                 if (ridesName.equals("Boat")) {
                     // ボート窒息は身長で決まるためこの処理でも防げない
-                    mainFrame.setRotationPointY(mainFrame.getRotationPointY() - 6.0f * sizeRate.rebirthAxisY);
+                    mainFrame.setRotationPointY(mainFrame.getRotationPointY() - 6.0f * sizeRate.reverseAxisY);
                 }
             });
         }
