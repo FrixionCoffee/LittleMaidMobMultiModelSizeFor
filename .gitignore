@@ -22,3 +22,8 @@ eclipse
 run
 mods
 /src/main/resources/
+backup
+AutoBuildProject/.idea
+AutoBuildProject/out
+AutoBuildProject/build
+AutoBuildProject/AutoBuildProject.iml

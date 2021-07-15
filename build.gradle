@@ -1,6 +1,9 @@
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 
 
 buildscript {
@@ -89,6 +92,143 @@ static String getBuildName(String fullSourceFileName) {
     fullSourceFileName.substring(startIndex, endIndex)
 }
 
+class BuildName {
+    final String CLASS_NAME
+    final String CLASS_FILE_NAME
+    final String SIZE_RATE_NAME
+
+    BuildName(String baseName, String sizeRateName) {
+        CLASS_NAME = createClassName(baseName)
+        CLASS_FILE_NAME = CLASS_NAME + ".java"
+        SIZE_RATE_NAME = "SizeRate." + sizeRateName
+    }
+
+    /**
+     *
+     * @param baseName example: "333DangerNotSR2"
+     * @return example: ""ModelLittleMaid_ZeroDot333DangerNotSR2
+     */
+    private static String createClassName(final String baseName) {
+        final StringBuilder stringBuilder = new StringBuilder()
+        stringBuilder.append("ModelLittleMaid_ZeroDot")
+        stringBuilder.append(baseName)
+        return stringBuilder.toString()
+    }
+}
+
+static boolean isNotSR2() {
+    return true
+}
+
+static List<String> getBaseClassNameList() {
+    final List<String> baseNames = new ArrayList<>()
+    baseNames.add("200Danger")
+    baseNames.add("250Danger")
+    baseNames.add("300Danger")
+    baseNames.add("350Danger")
+    baseNames.add("400Danger")
+    baseNames.add("450")
+    baseNames.add("500")
+    baseNames.add("550")
+    baseNames.add("600")
+    baseNames.add("650")
+    baseNames.add("700")
+    baseNames.add("750")
+    baseNames.add("800")
+    baseNames.add("850")
+    baseNames.add("900")
+    baseNames.add("950")
+    baseNames.add("370PassedHalfBlockDanger")
+    baseNames.add("733PassedBlock")
+    baseNames.add("333Danger")
+
+    if (baseNames.size() != 19) {
+        throw new AssertionError()
+    }
+    return baseNames
+}
+
+static List<String> getBaseNameListOrAddNotSR2() {
+    if (!isNotSR2()) {
+        return getBaseClassNameList()
+    }
+
+    return changeNotSR2(getBaseClassNameList())
+}
+
+static List<String> changeNotSR2(final List<String> baseNameList) {
+    List<String> baseNamesAddNotSR2 = new ArrayList<>()
+    for (baseName in baseNameList) {
+        baseNamesAddNotSR2.add(baseName + "NotSR2")
+    }
+    return baseNamesAddNotSR2
+}
+
+static Map<String, String> getSizeRateNameMap() {
+    final NavigableMap<String, String> sizeRateNameMap = new TreeMap<>()
+    sizeRateNameMap.put("200Danger", "ZERO_DOT200_DANGER")
+    sizeRateNameMap.put("250Danger", "ZERO_DOT250_DANGER")
+    sizeRateNameMap.put("300Danger", "ZERO_DOT300_DANGER")
+    sizeRateNameMap.put("333Danger", "ZERO_DOT333_DANGER")
+    sizeRateNameMap.put("350Danger", "ZERO_DOT350_DANGER")
+    sizeRateNameMap.put("400Danger", "ZERO_DOT400_DANGER")
+    sizeRateNameMap.put("450", "ZERO_DOT450")
+    sizeRateNameMap.put("500", "ZERO_DOT500")
+    sizeRateNameMap.put("550", "ZERO_DOT550")
+    sizeRateNameMap.put("600", "ZERO_DOT600")
+    sizeRateNameMap.put("650", "ZERO_DOT650")
+    sizeRateNameMap.put("700", "ZERO_DOT700")
+    sizeRateNameMap.put("750", "ZERO_DOT750")
+    sizeRateNameMap.put("800", "ZERO_DOT800")
+    sizeRateNameMap.put("850", "ZERO_DOT850")
+    sizeRateNameMap.put("900", "ZERO_DOT900")
+    sizeRateNameMap.put("950", "ZERO_DOT950")
+    sizeRateNameMap.put("370PassedHalfBlockDanger", "PASSED_HALF_BLOCK_DANGER")
+    sizeRateNameMap.put("733PassedBlock", "PASSED_BLOCK")
+
+    if (sizeRateNameMap.size() != 19) {
+        throw new AssertionError()
+    }
+
+    final def addNotSR2List = changeNotSR2(getBaseClassNameList())
+
+    for (i in addNotSR2List) {
+        final def rowKey = sizeRateNameMap.floorKey(i)
+        final def sizeRateName = sizeRateNameMap.get(rowKey)
+        sizeRateNameMap.put(i, sizeRateName)
+    }
+
+    return sizeRateNameMap
+}
+
+static List<BuildName> getBuildList() {
+    final List<BuildName> buildList = new ArrayList<>()
+    final def sizeRateMap = getSizeRateNameMap()
+    final def classBaseNameList = getBaseNameListOrAddNotSR2()
+    for (baseName in classBaseNameList) {
+        buildList.add(new BuildName(baseName, sizeRateMap.get(baseName)))
+    }
+
+    return buildList
+}
+
+static String getProjectDirName() {
+    return "D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor"
+}
+
+static Path getProjectJavaDirPath() {
+    return Paths.get(getProjectDirName(), "src\\main\\java")
+}
+
+static Path getNowJavaFilePath() {
+    Path path = getProjectJavaDirPath()
+    for (i in Files.list(path)) {
+        return i
+    }
+    throw new AssertionError()
+}
+
+
 static void translateResourcesDirName() {
     /**
      * リトルメイドのマルチモデルクラス名に応じて適切なリソースディレクトリ名に置換する関数
@@ -121,6 +261,118 @@ task zipBuild(type: Zip, dependsOn: jar) {
 
     archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
     from sourceSets.main.output
+}
+
+task zipAllBuild(type: Zip, dependsOn: jar) {
+    includeEmptyDirs = false
+    translateResourcesDirName()
+    String archivesBaseName = "SizeFor" + getBuildName(getSourceFileName())
+
+    archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
+    from sourceSets.main.output
+
+}
+
+
+static List<String> getJavaCodeAllLines() {
+    return Files.readAllLines(getNowJavaFilePath(), StandardCharsets.UTF_8)
+}
+
+static List<String> changeJavaCode(String classBaseName, String sizeRateName) {
+    def javaCode = getJavaCodeAllLines()
+
+    List<String> overWrittenJavaCode = new ArrayList<>()
+    for (line in javaCode) {
+        if (line.indexOf("private static final SizeRate sizeRate = ") != -1) {
+            overWrittenJavaCode.add("private static final SizeRate sizeRate = " + sizeRateName + ";")
+            continue
+        }
+
+        if (line.indexOf("public ModelLittleMaid_ZeroDot") != -1) {
+            String text = classBaseName + line.substring(line.indexOf("("))
+            overWrittenJavaCode.add(text)
+            continue
+        }
+
+        if (line.indexOf("public class ModelLittleMaid_ZeroDot") != -1){
+            overWrittenJavaCode.add("public class " + classBaseName + " extends ModelLittleMaidBase {")
+            continue
+        }
+        overWrittenJavaCode.add(line)
+    }
+    return overWrittenJavaCode
+
+}
+
+/**
+ * リストの差分抽出
+ * @param baseList
+ * @param changedList
+ * @return
+ */
+static List<String> getNotEqualsLineList(List<String> baseList, List<String> changedList) {
+    if (baseList.size() != changedList.size()) {
+        throw new IllegalArgumentException()
+    }
+
+    final List<String> resultList = new ArrayList<>()
+    for (i in 0..<baseList.size()) {
+
+        if (baseList.get(i) != changedList.get(i)) {
+            resultList.add(changedList.get(i))
+        }
+    }
+
+    return resultList
+}
+
+
+static listPrintln(List<Object> list) {
+    for (i in list) {
+        println(i)
+    }
+}
+
+task example() {
+    doLast {
+        // doLastに入れないと同期のたびに実行されて面倒なことになる
+    }
+}
+
+task testChangeJavaCode() {
+    doLast {
+        final def rawText = getJavaCodeAllLines()
+        List<String> list = new ArrayList<>()
+        for (i in getBuildList()) {
+            final List<String> changedText = changeJavaCode(i.CLASS_NAME, i.SIZE_RATE_NAME)
+            list.addAll(getNotEqualsLineList(rawText, changedText))
+        }
+
+        listPrintln(list)
+
+
+    }
+}
+
+static void translateJavaFile(final BuildName buildName) {
+    def textList = changeJavaCode(buildName.CLASS_NAME, buildName.SIZE_RATE_NAME)
+    final Path oldJavaFilePath = getNowJavaFilePath()
+
+    def path = getProjectJavaDirPath().resolve(buildName.CLASS_FILE_NAME)
+    if (!Files.exists(path)) {
+        Files.createFile(path)
+    }
+    Files.write(path, textList, StandardCharsets.UTF_8, StandardOpenOption.WRITE)
+
+    Files.delete(oldJavaFilePath)
+}
+
+task testCreateJavaFile() {
+    doLast {
+
+        translateJavaFile(getBuildList().get(0))
+
+    }
 }
 
 artifacts {
