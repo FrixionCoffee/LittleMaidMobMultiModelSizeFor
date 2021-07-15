@@ -15,15 +15,17 @@ import java.util.Optional;
  * ----------------------------------------------------
  * <p>
  */
-public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase {
+public class ModelLittleMaid_ZeroDot333Danger extends ModelLittleMaidBase {
     public ModelRenderer eyeR;
     public ModelRenderer eyeL;
 
     /**
      * メイドさんの拡大率を制御するためのEnum
      * インナークラスとして存在しているので、保持元クラスの変数に入れれば動く
-     * egg) private static final SizeRate sizeRate = SizeRate.ZERO_DOT500;
-     * 上の例では0.5倍サイズのメイドさんになる<br><br>
+     * egg) private !static final SizeRate sizeRate = SizeRate.ZERO_DOT500;
+     * 上の例では0.5倍サイズのメイドさんになる
+     * staticの前にある!はコメント部が置換されないように設置したものです。特に深い意味はありません
+     * <br><br>
      * <p>
      * 変数名にDANGERが付いているものは使用を推奨しないもの
      * 調整する式自体は結構適当で誤差が出まくりだが、0.5倍までであれば人間の目にはあまり違和感がない
@@ -267,22 +269,22 @@ public class ModelLittleMaid_ZeroDot333DangerNotSR2 extends ModelLittleMaidBase 
      * 拡大率制御用変数
      * ここのEnumを用意した・追加した物に変更することで全体の拡大率を変更することができる
      */
-    private static final SizeRate sizeRate = SizeRate.ZERO_DOT950;
+private static final SizeRate sizeRate = SizeRate.ZERO_DOT200_DANGER;
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot333DangerNotSR2() {
+    ModelLittleMaid_ZeroDot333Danger() {
         super();
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot333DangerNotSR2(float pSize) {
+    ModelLittleMaid_ZeroDot333Danger(float pSize) {
         super(pSize);
 //        テクスチャがデフォルトでない場合(多分使わない)
 //        super(pSize, 0.0f, 64, 64);
     }
 
     @SuppressWarnings("unused")
-    public ModelLittleMaid_ZeroDot333DangerNotSR2(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
+    ModelLittleMaid_ZeroDot333Danger(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
         super(pSize, pYOffset, pTextureWidth, pTextureHeight);
     }
 
