@@ -269,22 +269,22 @@ public class ModelLittleMaid_ZeroDot333Danger extends ModelLittleMaidBase {
      * 拡大率制御用変数
      * ここのEnumを用意した・追加した物に変更することで全体の拡大率を変更することができる
      */
-private static final SizeRate sizeRate = SizeRate.ZERO_DOT200_DANGER;
+private static final SizeRate sizeRate = SizeRate.ZERO_DOT333_DANGER;
 
     @SuppressWarnings("unused")
-    ModelLittleMaid_ZeroDot333Danger() {
+public ModelLittleMaid_ZeroDot333Danger() {
         super();
     }
 
     @SuppressWarnings("unused")
-    ModelLittleMaid_ZeroDot333Danger(float pSize) {
+public ModelLittleMaid_ZeroDot333Danger(float pSize) {
         super(pSize);
 //        テクスチャがデフォルトでない場合(多分使わない)
 //        super(pSize, 0.0f, 64, 64);
     }
 
     @SuppressWarnings("unused")
-    ModelLittleMaid_ZeroDot333Danger(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
+public ModelLittleMaid_ZeroDot333Danger(float pSize, float pYOffset, int pTextureWidth, int pTextureHeight) {
         super(pSize, pYOffset, pTextureWidth, pTextureHeight);
     }
 
@@ -433,16 +433,16 @@ private static final SizeRate sizeRate = SizeRate.ZERO_DOT200_DANGER;
         return super.getWidth() * sizeRate.axisX;
     }
 
-//    @Override
-//    public float getyOffset() {
-//        return super.getyOffset() * sizeRate.axisY;
-//    }
-//
-//    @Override
-//    public float getMountedYOffset() {
-//        // 何のメソッドかは分からないけどとりあえず調整して返す
-//        return super.getMountedYOffset() * sizeRate.axisY;
-//    }
+    @Override
+    public float getyOffset() {
+        return super.getyOffset() * sizeRate.axisY;
+    }
+
+    @Override
+    public float getMountedYOffset() {
+        // 何のメソッドかは分からないけどとりあえず調整して返す
+        return super.getMountedYOffset() * sizeRate.axisY;
+    }
 
     @Override
     public void setLivingAnimations(IModelCaps entityCaps, float limbSwing, float limbSwingAmount, float partialTickTime) {

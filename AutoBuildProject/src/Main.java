@@ -1,18 +1,168 @@
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.Instant;
+import java.util.List;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void main(String[] args) {
-        var s = GradleFunction.getSourceFileName();
-        System.out.println(s);
+        final var startInstant = Instant.now();
 
-        GradleFunction.getBuildList()
+        final var buildNames = GradleFunction.getBuildList();
+        boolean fastBuild = false;
+
+
+        for (var buildName : buildNames) {
+            GradleFunction.translateJavaFile(buildName);
+            GradleFunction.translateResourcesDirName();
+            try {
+                TimeUnit.MILLISECONDS.sleep(100);
+//                CommandRunner.zipBuildRun();
+                var iRobot = new IntelliJButtonPushRobot();
+
+                if (!fastBuild) {
+                    iRobot.runNowTaskRun();
+                    TimeUnit.SECONDS.sleep(15); //初回ビルドに付き、長めに待機
+                    fastBuild = true;
+                }else {
+                    iRobot.currentTaskRun();
+                    TimeUnit.SECONDS.sleep(5); //IntelliJのビルド終了待ち
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("All zipBuild finish. is Not SR2 = " + GradleFunction.isNotSR2());
+
+        final var endInstant = Instant.now();
+        System.out.println(
+                "All zipBuild finish time: "
+                        + endInstant.minusSeconds(startInstant.getEpochSecond()).getEpochSecond()
+                        + "second"
+
+        );
+
+    }
+
+}
+
+/**
+ * やっぱり2768環境で他forgeに依存したmodに依存したリトルメイドは作れないっぽい
+ * cmd経由で gradlew zipBuildするとcompile Javaが失敗する
+ * 何故かIntelliJの実行ボタンからzipBuildしたときは、欲しいビルドをいい感じにやってくれるっぽい
+ * <p>
+ * IntelliJのzipBuildさえ動かせればよいので、RobotクラスでIntelliJを操作する
+ */
+
+class IntelliJButtonPushRobot {
+
+    private final Robot robot;
+
+    IntelliJButtonPushRobot() {
+        try {
+            this.robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public void mouseClick() {
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.delay(10);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        robot.delay(100);
+    }
+
+    public void leftDisplayClick() {
+        robot.mouseMove(100, 100);
+        robot.delay(100);
+    }
+
+    private void pushDoubleKeyBoardButton(int key1, int key2) {
+        robot.keyPress(key1);
+        robot.keyPress(key2);
+        robot.delay(10);
+
+        robot.keyRelease(key1);
+        robot.keyRelease(key2);
+        robot.delay(100);
+    }
+
+    public void currentTaskRun() {
+        pushDoubleKeyBoardButton(KeyEvent.VK_SHIFT, KeyEvent.VK_F10);
+    }
+
+    /**
+     * IntelliJにセットされているタスクを実行する
+     */
+    public void runNowTaskRun() {
+        leftDisplayClick();
+        mouseClick();
+        currentTaskRun();
+    }
+}
+
+class CommandHolder {
+
+    static final String commandPrompt = "C:\\Windows\\system32\\cmd.exe";
+
+    static final String commandPromptExitOption = "/c";
+
+    static final String[] setCommandPromptCharCodeUTF8 = {
+            "CHCP", "65001"
+    };
+
+    static final String andArguments = "&";
+
+    enum ProjectRootDirName {
+        LMLIB(""),
+        NX("NX"),
+        X("X");
+
+        final String NAME;
+
+        ProjectRootDirName(String addName) {
+            NAME = addName;
+        }
+    }
+
+    static final ProjectRootDirName PROJECT_ROOT_DIR_NAME = ProjectRootDirName.LMLIB;
+
+    public static final Path projectDirPath = Paths.get(
+            "D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor" + PROJECT_ROOT_DIR_NAME.NAME
+    );
+
+    static final String[] tree = {
+            "tree"
+    };
+
+    static final String[] gradlewZipBuild = {
+            "gradlew", "zipBuild"
+    };
+
+}
+
+class CommandRunner {
+
+    static void zipBuildRun() {
+        System.out.println("gradlew zipBuild start");
+        GradleFunction.processStart(CommandHolder.gradlewZipBuild)
                 .forEach(System.out::println);
+        System.out.println("gradlew zipBuild end");
     }
 
 }
@@ -22,13 +172,13 @@ class GradleFunction {
     /**
      * java直下にあるファイルで、ファイル名にModelLittleMaidが含まれるファイルの最も最初にマッチした物を返す
      * 基本的にModelLittleMaidを含むファイル名は一つしかないと仮定している
-     *
+     * <p>
      * Mint OSだと相対パスで記述できたけど、WindowsだとGradleがコケるのでやむを得ず絶対パス表記にした。
      * もし、このコードを使用される方が居たら、適切なパスに変更してください。
      */
     static String getSourceFileName() {
 
-        var workDir = Paths.get("D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\java");
+        var workDir = Paths.get(CommandHolder.projectDirPath.toString(), "\\src\\main\\java");
 
         String sourceFileCodeName = "Error";
         try {
@@ -49,7 +199,7 @@ class GradleFunction {
 //                break;
 //            }
 //        }
-        String sourceFileStrPath = "D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\java" + sourceFileCodeName;
+        String sourceFileStrPath = CommandHolder.projectDirPath + "\\src\\main\\java" + sourceFileCodeName;
         Path sourceFilePath = Paths.get(sourceFileStrPath);
         return sourceFilePath.getFileName().toString();
     }
@@ -69,7 +219,7 @@ class GradleFunction {
             CLASS_NAME = createClassName(baseName);
 
             String suffix = "";
-            if (!CLASS_NAME.contains(".java")){
+            if (!CLASS_NAME.contains(".java")) {
                 suffix = ".java";
             }
             CLASS_FILE_NAME = CLASS_NAME + suffix;
@@ -96,7 +246,7 @@ class GradleFunction {
     }
 
     static boolean isNotSR2() {
-        return true;
+        return false;
     }
 
     static List<String> getBaseClassNameList() {
@@ -171,7 +321,7 @@ class GradleFunction {
 
         final var addNotSR2List = changeNotSR2(getBaseClassNameList());
 
-        for (var i: addNotSR2List) {
+        for (var i : addNotSR2List) {
             final var rowKey = sizeRateNameMap.floorKey(i);
             final var sizeRateName = sizeRateNameMap.get(rowKey);
             sizeRateNameMap.put(i, sizeRateName);
@@ -184,15 +334,15 @@ class GradleFunction {
         final List<BuildName> buildList = new ArrayList<>();
         final var sizeRateMap = getSizeRateNameMap();
         final var classBaseNameList = getBaseNameListOrAddNotSR2();
-        for (var baseName: classBaseNameList) {
-            buildList.add(new BuildName(baseName, sizeRateMap.get(baseName)));
+        for (var baseName : classBaseNameList) {
+            buildList.add((new BuildName(baseName, sizeRateMap.get(baseName))));
         }
 
         return buildList;
     }
 
     static String getProjectDirName() {
-        return "D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor";
+        return CommandHolder.projectDirPath.toString();
     }
 
     static Path getProjectJavaDirPath() {
@@ -218,7 +368,7 @@ class GradleFunction {
 //            break;
 //        }
         try {
-            resourcePath = Files.list(Paths.get("D:\\Minecraft_Modding\\LittleMaidMobMultiModelSizeFor\\src\\main\\resources\\assets\\minecraft\\textures\\entity\\littleMaid"))
+            resourcePath = Files.list(Paths.get(CommandHolder.projectDirPath.toString(), "\\src\\main\\resources\\assets\\minecraft\\textures\\entity\\littleMaid"))
                     .findFirst()
                     .orElseThrow(IllegalStateException::new);
         } catch (IOException e) {
@@ -255,7 +405,7 @@ class GradleFunction {
             }
 
             if (line.contains("public ModelLittleMaid_ZeroDot")) {
-                String text = classBaseName + line.substring(line.indexOf("("));
+                String text = "public " + classBaseName + line.substring(line.indexOf("("));
                 overWrittenJavaCode.add(text);
                 continue;
             }
@@ -270,6 +420,7 @@ class GradleFunction {
 
     }
 
+    @SuppressWarnings("unused")
     static List<String> getNotEqualsLineList(List<String> baseList, List<String> changedList) {
         if (baseList.size() != changedList.size()) {
             throw new IllegalArgumentException();
@@ -286,6 +437,7 @@ class GradleFunction {
     }
 
 
+    @SuppressWarnings("unused")
     static void listPrintln(List<Object> list) {
         for (var i : list) {
             System.out.println(i);
@@ -313,25 +465,87 @@ class GradleFunction {
 //        }
 //    }
 
-//    static void translateJavaFile(final BuildName buildName) {
-//        var textList = changeJavaCode(buildName.CLASS_NAME, buildName.SIZE_RATE_NAME)
-//        final Path oldJavaFilePath = getNowJavaFilePath()
-//
-//        var path = getProjectJavaDirPath().resolve(buildName.CLASS_FILE_NAME)
-//        if (!Files.exists(path)) {
-//            Files.createFile(path)
-//        }
-//        Files.write(path, textList, StandardCharsets.UTF_8, StandardOpenOption.WRITE)
-//
-//        Files.delete(oldJavaFilePath)
+    static void translateJavaFile(final BuildName buildName) {
+        var textList = changeJavaCode(buildName.CLASS_NAME, buildName.SIZE_RATE_NAME);
+        final Path oldJavaFilePath = getNowJavaFilePath();
+
+        var path = getProjectJavaDirPath().resolve(buildName.CLASS_FILE_NAME);
+        try {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            Files.write(path, textList, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+
+            Files.delete(oldJavaFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+//    static void testTranslateJavaFile() {
+//        translateJavaFile(getBuildList().get(0));
 //    }
 
-//    task testCreateJavaFile() {
-//        doLast {
+//    static void zipBuildRun() {
+//        final String[] changeDirectoryProjectRoot = {
+//                "cd", getProjectDirName()
+//        };
 //
-//            translateJavaFile(getBuildList().get(0))
+//        final String[] gradlewZipBuild = {
+//                "gradlew", "zipBuild"
+//        };
 //
+////        var cmd = Runtime.getRuntime();
+////        cmd.exec(changeDirectoryProjectRoot)
+//
+//        ProcessBuilder processBuilder = new ProcessBuilder(changeDirectoryProjectRoot);
+//        try {
+//            var process = processBuilder.start();
+//            try (BufferedReader bufferedReader = new BufferedReader())
+//        } catch (IOException e) {
+//            e.printStackTrace();
 //        }
 //    }
+
+    static List<String> processStart(final String[] command) {
+
+        InputStream inputStream;
+        final List<String> resultList = new ArrayList<>();
+        final List<String> commandList = new ArrayList<>();
+
+        commandList.add(CommandHolder.commandPrompt);
+        commandList.add(CommandHolder.commandPromptExitOption);
+
+        commandList.addAll(Arrays.asList(CommandHolder.setCommandPromptCharCodeUTF8));
+        commandList.add(CommandHolder.andArguments);
+        commandList.addAll(Arrays.asList(command));
+
+
+        try {
+            final Process process = new ProcessBuilder((commandList.toArray(new String[0])))
+                    .directory(CommandHolder.projectDirPath.toFile())
+                    .start();
+
+            inputStream = process.getInputStream();
+
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader((inputStream)))) {
+                String systemOutLine;
+                for (; ; ) {
+                    systemOutLine = bufferedReader.readLine();
+                    if (systemOutLine == null) {
+                        inputStream.close();
+                        break;
+                    }
+                    resultList.add(systemOutLine);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return resultList;
+
+    }
 
 }

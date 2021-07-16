@@ -1,10 +1,8 @@
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
-
 
 buildscript {
     repositories {
@@ -19,7 +17,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = "1.12.2LMLibBuild"    //他のLMMを前提とする場合は後半部を変更する
+version = "1.12.2LMLibBuildVer2"    //他のLMMを前提とする場合は後半部を変更する
 group = "littleMaidMob"
 archivesBaseName = "SizeFor"
 
@@ -263,15 +261,15 @@ task zipBuild(type: Zip, dependsOn: jar) {
     from sourceSets.main.output
 }
 
-task zipAllBuild(type: Zip, dependsOn: jar) {
-    includeEmptyDirs = false
-    translateResourcesDirName()
-    String archivesBaseName = "SizeFor" + getBuildName(getSourceFileName())
-
-    archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
-    from sourceSets.main.output
-
-}
+//task zipAllBuild(type: Zip, dependsOn: jar) {
+//    includeEmptyDirs = false
+//    translateResourcesDirName()
+//    String archivesBaseName = "SizeFor" + getBuildName(getSourceFileName())
+//
+//    archiveName = "littleMaidMob-${archivesBaseName}-${version}.${extension}"
+//    from sourceSets.main.output
+//
+//}
 
 
 static List<String> getJavaCodeAllLines() {

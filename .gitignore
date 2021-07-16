@@ -27,3 +27,6 @@ AutoBuildProject/.idea
 AutoBuildProject/out
 AutoBuildProject/build
 AutoBuildProject/AutoBuildProject.iml
+
+src/main/java/*
+!src/main/java/ModelLittleMaid_ZeroDot333Danger.java
