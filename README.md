@@ -58,11 +58,9 @@ forgeインストール自体が不可能になったので確かめることが
 
 # モデルの命名規則について
 
-例: ZeroDot950[Danger][NotSR2][Passed XXX][VerYYY]
+例: ZeroDot950[Danger][NotSR2][Passed XXX]
 
 [XXX]はモデルによりあったり、なかったりします。
-
-[VerYYY]はリリースバージョン表記です。
 
 Zero Dot 950は拡大率0.95倍(95%)のサイズであることを意味します。 なので基本的に数字の部分だけを見て判断することができます。
 
